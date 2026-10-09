@@ -4,15 +4,18 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes">
-    <title>Unity Web Player | My project</title>
+    <title>My project</title>
     <style>
       /*
         画面いっぱいに広げる（2026-09-30）。
 
-        **この docs/ はビルド出力なので、次のビルドで上書きされる。**
-        同じ中身を `Assets/WebGLTemplates/KillingMahjong/index.html` に置いてあり、
-        `WebGLBuildSetup.cs` がそちらを使うよう指定してある。
-        ここを直してあるのは、ビルドを待たずに今の公開版で見られるようにするため。
+        **これまでは canvas が 800x600 の直書きだった。** 内蔵の Minimal
+        テンプレートをそのまま使っていたため、どんな大きさの画面でも
+        800x600 のまま左上寄りに小さく出ていて、プランナーから
+        「比率はいいがサイズが小さい」と言われた。
+
+        **4:3 は CSS だけで保つ。** 縦か横の狭いほうに合わせるので、
+        JS で大きさを計算し直す必要がない。
       */
       html, body {
         margin: 0;
@@ -35,7 +38,11 @@
       }
 
       #unity-canvas {
-        /* ドット絵なので、拡大は必ず nearest-neighbour にする */
+        /*
+          **ドット絵なので、拡大は必ず nearest-neighbour にする。**
+          既定の滑らかな拡大だと、1ドットの輪郭がぼけて別のゲームの絵になる。
+          `pixelated` を解さない古いブラウザのために `crisp-edges` も並べる。
+        */
         image-rendering: pixelated;
         image-rendering: crisp-edges;
         image-rendering: -moz-crisp-edges;
@@ -58,20 +65,29 @@
     <script>
       createUnityInstance(document.querySelector("#unity-canvas"), {
         arguments: [],
-        dataUrl: "Build/docs.data",
-        frameworkUrl: "Build/docs.framework.js",
-        codeUrl: "Build/docs.wasm",
+        dataUrl: "Build/docs.data.unityweb",
+        frameworkUrl: "Build/docs.framework.js.unityweb",
+        codeUrl: "Build/docs.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
         productName: "My project",
         productVersion: "0.1.0",
 
-        // **中身は 800x600 のまま描かせる。** 既定のままだと Unity が CSS の
-        // 大きさに合わせて描画解像度を上げ、ドット絵が半端な倍率で個別に拡大されて
-        // 位置ごとに太さが変わる。画面全体を1枚の絵として引き伸ばすほうが揃う。
+        /*
+          **中身は 800x600 のまま描かせる。** ここを既定（true）のままにすると、
+          Unity が CSS の大きさに合わせて描画解像度そのものを上げてしまう。
+          そうすると1枚1枚のドット絵が半端な倍率で個別に拡大され、
+          位置によってドットの太さが変わって、動くたびにちらつく。
+
+          画面全体を1枚の絵として引き伸ばすほうが、ドットの拡がり方が
+          画面のどこでも揃うので、ドット絵には向いている。
+        */
         matchWebGLToCanvasSize: false,
 
-        // 高DPIの画面でも 800x600 で描く
+        /*
+          **高DPIの画面でも 800x600 で描く。** これを入れないと Retina 等で
+          2倍の解像度に描かれ、上の matchWebGLToCanvasSize=false と噛み合わない。
+        */
         devicePixelRatio: 1,
       }).then((unityInstance) => {
       }).catch((message) => {
