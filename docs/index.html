@@ -54,12 +54,30 @@
         background: #231F20;
         display: block;
       }
+
+      /*
+        フォントのライセンス表記へのリンク（2026-11-02）。
+        でんきチップ（SIL OFL）は、フォントを同梱して配るなら著作権表示と
+        ライセンス文をユーザーが読める形で付けることが条件。ゲームの画面には
+        出さず（プランナーのUIルール）、ページの隅に小さく置く。
+      */
+      #license-link {
+        position: fixed;
+        right: 6px;
+        bottom: 4px;
+        font: 10px/1 sans-serif;
+        color: #555;
+        text-decoration: none;
+        z-index: 10;
+      }
+      #license-link:hover { color: #999; }
     </style>
   </head>
   <body>
     <div id="unity-container">
       <canvas id="unity-canvas" width="800" height="600" tabindex="-1"></canvas>
     </div>
+    <a id="license-link" href="licenses/" target="_blank" rel="noopener">ライセンス</a>
 
     <script src="Build/docs.loader.js?v=20261031004509"></script>
     <script>
